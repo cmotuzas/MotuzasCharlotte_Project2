@@ -7,7 +7,25 @@ import scipy as scp
 import matplotlib.pyplot as plt 
 import scipy.integrate as scint 
 
-# TESTING TESTING TESTING 
+# Background 
+''' - Distribution of ball speed off of the bat, gaussian of mean 100 mph with standard deviation 15 mph
+- launch angle gaussian mean of 45 degrees with standard deviation of 10 degrees 
+- determine how good of a home run hitter this RDH actually is 
+- compute expected ratio of at bats to home runs, the AB/HR ratio 
+- top hitters have a ratio of about 10
+- model the ball as a projectile moving under combined forces gravity and air resistance 
+- motion confined to xy plane, y being the height  above the ground 
 
-## TESTING TESTING TESTING 
+dv/dt = -g(yhat) - v(C_d*rho*A*v)/2m 
+dr/dt = v
 
+v seems to be the velocity, r is the displacement of the ball from the origin 
+yhat is the unit vector in the y direction
+
+m = 0.145 km. 
+d = 7.4 cm 
+g = 9.81 m/s^2
+rho = 1.2 kg/m^3 
+C_d = 0.35
+A = np.pi*(d/2)**2
+y0 = 1.0 m'''
