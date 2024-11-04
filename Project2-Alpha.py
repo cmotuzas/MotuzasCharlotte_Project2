@@ -43,9 +43,6 @@ y0 = 1.0
 
 # Part 1 
 
-
-# tau = 
-
 def BaseBallRobot (tau,v0,theta_0,y0,AirResistance=True): 
     # Euler Method
 
