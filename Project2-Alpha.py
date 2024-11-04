@@ -30,7 +30,37 @@ C_d = 0.35
 A = np.pi*(d/2)**2
 y0 = 1.0 m'''
 
+# Constants 
+
+m = 0.145  
+d = 7.4 
+g = 9.81 
+rho = 1.2 
+C_d = 0.35
+A = np.pi*(d/2)**2
+y0 = 1.0 
+
+
 # Part 1 
+
+
+# tau = 
+
+def BaseBallRobot (tau,v0,theta_0,y0,AirResistance=True): 
+    # Euler Method
+
+
+
+    # Euler-Cromer Method 
+
+
+
+    # Midpoint Method 
+    return 1
+
+
+
+# Part 2 
 
 mu_v0 = 100 
 std_v0 = 15
@@ -40,15 +70,3 @@ v0 = np.random.normal(mu_v0, std_v0,size0)/2.237 # divided by 2.237 to obtain va
 mu_theta_0 = 45
 std_theta_0 = 10 
 theta_0 = np.random.normal(mu_theta_0,std_theta_0,size0)
-
-# tau = 
-
-# Euler Method
-
-
-
-# Euler-Cromer Method 
-
-
-
-# Midpoint Method 
