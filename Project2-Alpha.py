@@ -35,8 +35,20 @@ y0 = 1.0 m'''
 mu_v0 = 100 
 std_v0 = 15
 size0 = (1,)
-v0 = np.random.normal(mu_v0, std_v0,size0)
+v0 = np.random.normal(mu_v0, std_v0,size0)/2.237 # divided by 2.237 to obtain value in m/s rather than mph
 
 mu_theta_0 = 45
 std_theta_0 = 10 
 theta_0 = np.random.normal(mu_theta_0,std_theta_0,size0)
+
+# tau = 
+
+# Euler Method
+
+
+
+# Euler-Cromer Method 
+
+
+
+# Midpoint Method 
