@@ -43,16 +43,58 @@ y0 = 1.0
 
 # Part 1 
 
-def BaseBallRobot (tau,v0,theta_0,y0,AirResistance=True): 
-    # Euler Method
+def BaseBallRobot (tau,v0,theta_0,y0,AirResistance=True, str): 
+    
+    if str == "Euler": 
+        # Euler Method
+    
+        # dv/dt = a(r,v) 
+        # dr/dt = v
+        print('Euler Method')
+
+        # v(t+tau) - v(t)/tau + O(tau) = a(r(t),v(t))
+        # r(t+tau) - r(t)/tau + O(tau) = v(t))
+        # r is displacement 
+
+        # v(t+tau) = v(t) + tau*a(r(t),v(t)) + O(tau^2)
+        # r(t+tau) = r(t) + tau*v(t) + O(tau^2)
+
+        # fn = f(tn); tn = n*tau; n = 0,1,...
+        # v(n+1) = vn + tau*an (2.18)
+        # r(n+1) = rn + tau*rn (2.19)
+
+        # specify initial conditions r0 and v0
+        # choose a timestep tau 
+        # calculate the acceleration given the current r and v 
+        # use eqs 2.18 and 2.19 to compute new r and v 
+        # repeat until enough trajectory points have been computed 
+        # computes a set pf values for rn and vn that gives us the trajectory 
 
 
 
-    # Euler-Cromer Method 
+        
+    elif str == "Euler-Cromer": 
+        # Euler-Cromer Method 
+        print('Euler-Cromer Method')
 
 
 
-    # Midpoint Method 
+
+    elif str == "Midpoint":
+        # Midpoint Method 
+        print('Midpoint Method')
+
+
+
+
+    else: 
+        print("This is not a valid entry for computation method. Please enter one of the following character strings: ")
+        print("'Euler'")
+        print("'Euler-Cromer'")
+        print("'Midpoint'")
+
+
+
     return 1
 
 
