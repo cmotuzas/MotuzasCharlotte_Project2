@@ -50,8 +50,6 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
 
     air_const = -0.5*C_d*rho*A/m
 
-    print(AirResistance)
-
     for istep in range(maxstep): 
  
         accel = air_const*np.sqrt(v[0]**2 + v[1]**2)*v
@@ -59,7 +57,9 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
 
         if str == "Euler": 
 
-            print(v)
+            v_old = v
+            r_old = r
+
 
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
@@ -75,12 +75,13 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
             # v(n+1) = vn + tau*an
             # r(n+1) = rn + tau*(v(n+1)+v(n))/
 
+            v_old = v
+            r_old = r
+
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
             r_step = r + tau*(v_step+v)/2                  # Euler step
             v, r = v_step,r_step
-
-            print(air_const)         
             
         elif str == "Midpoint":
             # Midpoint Method 
@@ -89,6 +90,10 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
             # --> r(n+1) = rn + tau*vn + (1/2)*an*tau^2
             
             #* Calculate the new position and velocity using Euler method
+            
+            v_old = v
+            r_old = r
+            
             v_step = v + tau*accel  
             r_step = r + tau*v + (1/2)*accel*tau**2
             v, r = v_step,r_step
@@ -112,11 +117,15 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
             laststep = istep+1
             xplot[laststep] = r[0]  # Record last values computed
             yplot[laststep] = r[1]
+
+            maxrange = -r_old[1]*(r[0]-r_old[0])/(r[1]-r_old[1]) + r_old[0]
+            tmax = (maxrange-r_old[0])*(tau*laststep-t)/(r[0]-r_old[0])+t
+
             break                   # Break out of the for loop
 
     #* Print maximum range and time of flight
-    print('Maximum range is', r[0], 'meters')
-    print('Time of flight is', laststep*tau , ' seconds')
+    print('Maximum range is', maxrange, 'meters')
+    print('Time of flight is', tau*laststep, ' seconds')
 
     return xplot, yplot, laststep, xNoAir, yNoAir
 
