@@ -57,7 +57,6 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
         if str == "Euler": 
 
-            v_old = v
             r_old = r
 
 
@@ -75,12 +74,11 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
             # v(n+1) = vn + tau*an
             # r(n+1) = rn + tau*(v(n+1)+v(n))/
 
-            v_old = v
             r_old = r
 
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
-            r_step = r + tau*(v_step+v)/2                  # Euler step
+            r_step = r + tau*v_step              # Euler step
             v, r = v_step,r_step
             
         elif str == "Midpoint":
@@ -91,11 +89,10 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
             
             #* Calculate the new position and velocity using Euler method
             
-            v_old = v
             r_old = r
             
             v_step = v + tau*accel  
-            r_step = r + tau*v + (1/2)*accel*tau**2
+            r_step = r + tau*(v_step+v)/2
             v, r = v_step,r_step
 
         else: 
@@ -162,7 +159,8 @@ plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Mid
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
-#plt.show()
+plt.grid()
+plt.show()
 
 v0 = 50
 y0 = 1.0
@@ -183,7 +181,9 @@ plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Mid
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
-#plt.show()
+plt.grid()
+plt.show()
+
 
 
 
@@ -265,7 +265,7 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
 
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
-            r_step = r + tau*(v_step+v)/2                  # Euler step
+            r_step = r + tau*v_step                  # Euler step
             v, r = v_step,r_step
             
         elif str == "Midpoint":
@@ -279,7 +279,7 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
             r_old = r
             
             v_step = v + tau*accel  
-            r_step = r + tau*v + (1/2)*accel*tau**2
+            r_step = r + tau*(v_step+v)/2 
             v, r = v_step,r_step
 
         else: 
@@ -339,14 +339,21 @@ std_theta_0 = 10
 theta_0 = (mu_theta_0 + std_theta_0*np.random.randn(N))
 str = "Midpoint"
 
-fenceheight = 11.3
+fenceheight = np.linspace(0.5,15,30)
 
-count = 0
-for i in range(N): 
-    height = RDHFence(tau,m,g,v0[i],theta_0[i],y0,A,C_d,rho,str,AirResistance=1,printon = 0)
-    if height >= fenceheight: 
-        count = count + 1
+ABHR_Ratio = np.empty(30)
 
-ABHR_Ratio = N/count
+lessthan10 = np.zeros(30)
+for j in range(30): 
+    count = 0
+    for i in range(N): 
+        height = RDHFence(tau,m,g,v0[i],theta_0[i],y0,A,C_d,rho,str,AirResistance=1,printon = 0)
+        if height >= fenceheight[j]: 
+            count = count + 1
 
-print(ABHR_Ratio)
+    ABHR_Ratio[j] = N/count
+    if ABHR_Ratio[j] < 10: 
+        lessthan10[j] = j
+
+minfenceheight = fenceheight[np.where(lessthan10 == max(lessthan10))]
+print('Minimum fence height should be ',minfenceheight[0]+0.5, 'm')
