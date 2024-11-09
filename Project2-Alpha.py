@@ -22,7 +22,7 @@ dr/dt = v
 v seems to be the velocity, r is the displacement of the ball from the origin 
 yhat is the unit vector in the y direction
 
-m = 0.145 km. 
+m = 0.145 kg. 
 d = 7.4 cm 
 g = 9.81 m/s^2
 rho = 1.2 kg/m^3 
@@ -32,7 +32,7 @@ y0 = 1.0 m'''
 
 # Part 1 
 
-def BaseBallRobot (tau,m,d,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1): 
+def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1): 
     r0 = np.array([0,y0]) # initial position vector 
     v0 = np.array([v0*np.cos(theta_0*np.pi/180),v0*np.sin(theta_0*np.pi/180)]) # initial velocity vector 
     r = np.copy(r0)   # Set initial position 
@@ -44,25 +44,28 @@ def BaseBallRobot (tau,m,d,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
     yNoAir = np.empty(maxstep)
 
     if AirResistance == 1: 
-        rho = 0
-    else: 
         rho = rho_input
+    else: 
+        rho = 0
 
     air_const = -0.5*C_d*rho*A/m
 
-    print(air_const)
+    print(AirResistance)
 
     for istep in range(maxstep): 
  
-        accel = air_const*np.linalg.norm(v)*v
+        accel = air_const*np.sqrt(v[0]**2 + v[1]**2)*v
         accel[1] = accel[1] - g
 
         if str == "Euler": 
+
+            print(v)
 
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
             r_step = r + tau*v                   # Euler step
             v, r = v_step,r_step
+
         
 
 
@@ -119,21 +122,21 @@ def BaseBallRobot (tau,m,d,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
 
 # Constants 
 
-m = 0.145  
-d = 7.4 
+m = 0.145 
+d = 7.4/100 
 g = 9.81 
-rho = 1.2 
+rho = 1.2
 C_d = 0.35
 A = np.pi*(d/2)**2
 y0 = 1.0 
 tau = 0.1
 theta_0 = 45
-v0 = 15
-y0 = 0
+v0 = 50
+y0 = 1
 
 str = "Euler"
 
-xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,d,g,v0,theta_0,y0,A,C_d,rho,str,AirResistance=1)
+xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str,AirResistance=1)
 
 
 # Graph the trajectory of the baseball
