@@ -43,59 +43,117 @@ y0 = 1.0
 
 # Part 1 
 
-def BaseBallRobot (tau,v0,theta_0,y0,AirResistance=True, str): 
-    
+def BaseBallRobot (tau,m,d,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=True): 
+    r0 = np.array([0,y0]) # initial position vector 
+    speed = np.array([v0*np.cos(theta_0*np.pi/180),v0*np.sin(theta_0*np.pi/180)]) # initial velocity vector 
+    r = np.copy(r0)   # Set initial position 
+    v = np.copy(speed)   # Set initial velocity
+    maxstep = 1000
+    xplot = np.empty(maxstep)
+    yplot = np.empty(maxstep)
+
+    if AirResistance == True: 
+        rho = 0
+    else: 
+        rho = rho_input
+
+    air_const = -0.5*C_d*rho*A/m
+
     if str == "Euler": 
         # Euler Method
-    
-        # dv/dt = a(r,v) 
-        # dr/dt = v
         print('Euler Method')
 
-        # v(t+tau) - v(t)/tau + O(tau) = a(r(t),v(t))
-        # r(t+tau) - r(t)/tau + O(tau) = v(t))
-        # r is displacement 
+        for istep in range(maxstep): 
+            #* Record position (computed and theoretical) for plotting
+            xplot[istep] = r[0]   # Record trajectory for plot
+            yplot[istep] = r[1]
+            t = istep*tau         # Current time
 
-        # v(t+tau) = v(t) + tau*a(r(t),v(t)) + O(tau^2)
-        # r(t+tau) = r(t) + tau*v(t) + O(tau^2)
+            accel = air_const*np.linalg.norm(v)*v
+            accel[1] = accel[1] - g
 
-        # fn = f(tn); tn = n*tau; n = 0,1,...
-        # v(n+1) = vn + tau*an (2.18)
-        # r(n+1) = rn + tau*rn (2.19)
+            #* Calculate the new position and velocity using Euler method
+            r = r + tau*v                    # Euler step
+            v = v + tau*accel  
+            
+            #* If ball reaches ground (y<0), break out of the loop
+            if r[1] < 0 : 
+                laststep = istep+1
+                xplot[laststep] = r[0]  # Record last values computed
+                yplot[laststep] = r[1]
+                break                   # Break out of the for loop
 
-        # specify initial conditions r0 and v0
-        # choose a timestep tau 
-        # calculate the acceleration given the current r and v 
-        # use eqs 2.18 and 2.19 to compute new r and v 
-        # repeat until enough trajectory points have been computed 
-        # computes a set pf values for rn and vn that gives us the trajectory 
-
-
-
-        
     elif str == "Euler-Cromer": 
         # Euler-Cromer Method 
         print('Euler-Cromer Method')
 
+        # v(n+1) = vn + tau*an
+        # r(n+1) = rn + tau*(v(n+1)+v(n))/2
 
+        for istep in range(maxstep): 
+            #* Record position (computed and theoretical) for plotting
+            xplot[istep] = r[0]   # Record trajectory for plot
+            yplot[istep] = r[1]
+            t = istep*tau         # Current time
 
+            accel = air_const*np.linalg.norm(v)*v
+            accel[1] = accel[1] - g
 
+            #* Calculate the new position and velocity using Euler method
+            v_old = v
+            v = v_old + tau*accel  
+            r = r + tau*(v+v_old)/2  
+
+            print(v+v_old)              
+
+            
+            #* If ball reaches ground (y<0), break out of the loop
+            if r[1] < 0 : 
+                laststep = istep+1
+                xplot[laststep] = r[0]  # Record last values computed
+                yplot[laststep] = r[1]
+                break                   # Break out of the for loop     
+            #
     elif str == "Midpoint":
         # Midpoint Method 
         print('Midpoint Method')
+        
+        # v(n+1) = vn + tau*an
+        # --> r(n+1) = rn + tau*vn + (1/2)*an*tau^2
 
+        for istep in range(maxstep): 
+            #* Record position (computed and theoretical) for plotting
+            xplot[istep] = r[0]   # Record trajectory for plot
+            yplot[istep] = r[1]
+            t = istep*tau         # Current time
 
+            accel = air_const*np.linalg.norm(v)*v
+            accel[1] = accel[1] - g
 
+            #* Calculate the new position and velocity using Euler method
+            v_old = v
+            v = v_old + tau*accel  
+            r = r + tau*v_old + (1/2)*accel*tau**2
+            
+            #* If ball reaches ground (y<0), break out of the loop
+            if r[1] < 0 : 
+                laststep = istep+1
+                xplot[laststep] = r[0]  # Record last values computed
+                yplot[laststep] = r[1]
+                break                   # Break out of the for loop
 
+        #
     else: 
         print("This is not a valid entry for computation method. Please enter one of the following character strings: ")
         print("'Euler'")
         print("'Euler-Cromer'")
         print("'Midpoint'")
 
+    #* Print maximum range and time of flight
+    print('Maximum range is', r[0], 'meters')
+    print('Time of flight is', laststep*tau , ' seconds')
 
-
-    return 1
+    return xplot, yplot
 
 
 
