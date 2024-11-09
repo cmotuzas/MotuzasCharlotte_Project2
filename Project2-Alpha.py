@@ -32,7 +32,7 @@ y0 = 1.0 m'''
 
 # Part 1 
 
-def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1): 
+def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon = 1): 
     r0 = np.array([0,y0]) # initial position vector 
     v0 = np.array([v0*np.cos(theta_0*np.pi/180),v0*np.sin(theta_0*np.pi/180)]) # initial velocity vector 
     r = np.copy(r0)   # Set initial position 
@@ -123,11 +123,13 @@ def BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1):
 
             break                   # Break out of the for loop
 
-    #* Print maximum range and time of flight
-    print('Maximum range is', maxrange, 'meters')
-    print('Time of flight is', tau*laststep, ' seconds')
 
-    return xplot, yplot, laststep, xNoAir, yNoAir
+    if printon == 1: 
+        #* Print maximum range and time of flight
+        print('Maximum range is', maxrange, 'meters')
+        print('Time of flight is', tmax, ' seconds')
+
+    return xplot, yplot, laststep, xNoAir, yNoAir, maxrange
 
 # Constants 
 
@@ -137,16 +139,15 @@ g = 9.81
 rho = 1.2
 C_d = 0.35
 A = np.pi*(d/2)**2
-y0 = 1.0 
+y0 = 0 
 tau = 0.1
 theta_0 = 45
-v0 = 50
-y0 = 1
+v0 = 15
 
 str = ['Euler', 'Euler-Cromer','Midpoint']
 
 for i in range (3): 
-    xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=0)
+    xplot, yplot, laststep, xNoAir, yNoAir, maxrange = RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=0,printon=1)
     if i == 0:
         xground = np.array([0., xplot[laststep-1]])
         yground = np.array([0., 0.])
@@ -161,14 +162,15 @@ plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Mid
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
-plt.show()
+#plt.show()
 
-
+v0 = 50
+y0 = 1.0
 
 for i in range (3): 
-    xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=1)
+    xplot, yplot, laststep, xNoAir, yNoAir, maxrange = RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=1,printon=1)
     if i == 0:
-        xground = np.array([0., xplot[laststep-1]])
+        xground = np.array([0., xNoAir[laststep-1]])
         yground = np.array([0., 0.])
     
         plt.plot(xNoAir[0:laststep], yNoAir[0:laststep], 'r-',
@@ -181,22 +183,38 @@ plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Mid
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
-plt.show()
-
-
-
-
-
+#plt.show()
 
 
 
 # Part 2 
 
+m = 0.145 
+d = 7.4/100 
+g = 9.81 
+rho = 1.2
+C_d = 0.35
+A = np.pi*(d/2)**2
+y0 = 1.0 
+tau = 0.1
+
+N = 100
+
 mu_v0 = 100 
 std_v0 = 15
-size0 = (1,)
-v0 = np.random.normal(mu_v0, std_v0,size0)/2.237 # divided by 2.237 to obtain value in m/s rather than mph
+v0 = (mu_v0 + std_v0*np.random.randn(N))/2.237 # divided by 2.237 to obtain value in m/s rather than mph
 
 mu_theta_0 = 45
 std_theta_0 = 10 
-theta_0 = np.random.normal(mu_theta_0,std_theta_0,size0)
+theta_0 = (mu_theta_0 + std_theta_0*np.random.randn(N))
+str = "Midpoint"
+
+print(np.shape(theta_0))
+print(np.shape(v0))
+
+rangearray = np.empty(N)
+
+for i in range(N): 
+    xplot, yplot, laststep, xNoAir, yNoAir, maxrange = RoboticDesignatedHitter(tau,m,g,v0[i],theta_0[i],y0,A,C_d,rho,str,AirResistance=1,printon=0)
+    rangearray[i] = maxrange
+
