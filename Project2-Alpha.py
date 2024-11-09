@@ -209,9 +209,6 @@ std_theta_0 = 10
 theta_0 = (mu_theta_0 + std_theta_0*np.random.randn(N))
 str = "Midpoint"
 
-print(np.shape(theta_0))
-print(np.shape(v0))
-
 rangearray = np.empty(N)
 count = 0 
 for i in range(N): 
@@ -221,6 +218,135 @@ for i in range(N):
         count = count + 1
 
 ABHR_Ratio = N/count
-print(rangearray)
-print(count)
+print(ABHR_Ratio)
+
+# Part 3 
+
+def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon = 1): 
+    r0 = np.array([0,y0]) # initial position vector 
+    v0 = np.array([v0*np.cos(theta_0*np.pi/180),v0*np.sin(theta_0*np.pi/180)]) # initial velocity vector 
+    r = np.copy(r0)   # Set initial position 
+    v = np.copy(v0)   # Set initial velocity
+    maxstep = 1000
+    xplot = np.empty(maxstep)
+    yplot = np.empty(maxstep)
+    xNoAir = np.empty(maxstep)
+    yNoAir = np.empty(maxstep)
+
+    if AirResistance == 1: 
+        rho = rho_input
+    else: 
+        rho = 0
+
+    air_const = -0.5*C_d*rho*A/m
+
+    for istep in range(maxstep): 
+ 
+        accel = air_const*np.sqrt(v[0]**2 + v[1]**2)*v
+        accel[1] = accel[1] - g
+
+        if str == "Euler": 
+
+            r_old = r
+
+
+            #* Calculate the new position and velocity using Euler method
+            v_step = v + tau*accel  
+            r_step = r + tau*v                   # Euler step
+            v, r = v_step,r_step
+
+        elif str == "Euler-Cromer": 
+            # Euler-Cromer Method 
+
+            # v(n+1) = vn + tau*an
+            # r(n+1) = rn + tau*(v(n+1)+v(n))/
+
+            r_old = r
+
+            #* Calculate the new position and velocity using Euler method
+            v_step = v + tau*accel  
+            r_step = r + tau*(v_step+v)/2                  # Euler step
+            v, r = v_step,r_step
+            
+        elif str == "Midpoint":
+            # Midpoint Method 
+        
+            # v(n+1) = vn + tau*an
+            # --> r(n+1) = rn + tau*vn + (1/2)*an*tau^2
+            
+            #* Calculate the new position and velocity using Euler method
+            
+            r_old = r
+            
+            v_step = v + tau*accel  
+            r_step = r + tau*v + (1/2)*accel*tau**2
+            v, r = v_step,r_step
+
+        else: 
+            print("This is not a valid entry for computation method. Please enter one of the following character strings: ")
+            print("'Euler'")
+            print("'Euler-Cromer'")
+            print("'Midpoint'")
+            break
+        
+        #* Record position (computed and theoretical) for plotting
+        xplot[istep] = r[0]   # Record trajectory for plot
+        yplot[istep] = r[1]
+        t = istep*tau         # Current time
+        xNoAir[istep] = r0[0] + v0[0]*t
+        yNoAir[istep] = r0[1] + v0[1]*t - 0.5*g*t**2
+        
+        #* If ball reaches ground (y<0), break out of the loop
+        if r[0] > 400/3.281 : 
+            laststep = istep+1
+            xplot[laststep] = r[0]  # Record last values computed
+            yplot[laststep] = r[1]
+
+            slope = (r[1]-r_old[1])/(r[0]-r_old[0])
+            b = r_old[1] - slope*r_old[0]
+
+            height = slope*400/3.281 + b
+
+            break                   # Break out of the for loop
+        elif r[1] < -50: 
+            height = -50 # still a height that would discount it from being a home run, but cuts off the loop 
+            break 
+    
+
+    if printon == 1: 
+        #* Print maximum range and time of flight
+        print('height at 400 feet', height,'meters')
+
+    return height
+
+
+m = 0.145 
+d = 7.4/100 
+g = 9.81 
+rho = 1.2
+C_d = 0.35
+A = np.pi*(d/2)**2
+y0 = 1.0 
+tau = 0.1
+
+N = 100
+mu_v0 = 100 
+std_v0 = 15
+v0 = (mu_v0 + std_v0*np.random.randn(N))/2.237 # divided by 2.237 to obtain value in m/s rather than mph
+
+mu_theta_0 = 45
+std_theta_0 = 10 
+theta_0 = (mu_theta_0 + std_theta_0*np.random.randn(N))
+str = "Midpoint"
+
+fenceheight = 11.3
+
+count = 0
+for i in range(N): 
+    height = RDHFence(tau,m,g,v0[i],theta_0[i],y0,A,C_d,rho,str,AirResistance=1,printon = 0)
+    if height >= fenceheight: 
+        count = count + 1
+
+ABHR_Ratio = N/count
+
 print(ABHR_Ratio)
