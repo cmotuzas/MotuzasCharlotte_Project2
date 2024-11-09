@@ -134,20 +134,41 @@ theta_0 = 45
 v0 = 50
 y0 = 1
 
-str = "Euler"
+str = ['Euler', 'Euler-Cromer','Midpoint']
 
-xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str,AirResistance=1)
-
-
-# Graph the trajectory of the baseball
-# Mark the location of the ground by a straight line
-xground = np.array([0., xplot[laststep-1]])
-yground = np.array([0., 0.])
-# Plot the computed trajectory and parabolic, no-air curve
-plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], 'b+',
-         xNoAir[0:laststep], yNoAir[0:laststep], 'r-',
+for i in range (3): 
+    xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=0)
+    if i == 0:
+        xground = np.array([0., xplot[laststep-1]])
+        yground = np.array([0., 0.])
+    
+        plt.plot(xNoAir[0:laststep], yNoAir[0:laststep], 'r-',
          xground,yground,'k-')
-plt.legend(['Euler method', 'Theory (No air)']);
+        plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], '+')
+    else: 
+        plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], '+')
+
+plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Midpoint Method']);
+plt.xlabel('Range (m)')
+plt.ylabel('Height (m)')
+plt.title('Projectile motion')
+plt.show()
+
+
+
+for i in range (3): 
+    xplot, yplot, laststep, xNoAir, yNoAir = BaseBallRobot (tau,m,g,v0,theta_0,y0,A,C_d,rho,str[i],AirResistance=1)
+    if i == 0:
+        xground = np.array([0., xplot[laststep-1]])
+        yground = np.array([0., 0.])
+    
+        plt.plot(xNoAir[0:laststep], yNoAir[0:laststep], 'r-',
+         xground,yground,'k-')
+        plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], '+')
+    else: 
+        plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], '+')
+
+plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Midpoint Method']);
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
