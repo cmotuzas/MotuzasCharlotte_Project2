@@ -213,8 +213,14 @@ print(np.shape(theta_0))
 print(np.shape(v0))
 
 rangearray = np.empty(N)
-
+count = 0 
 for i in range(N): 
     xplot, yplot, laststep, xNoAir, yNoAir, maxrange = RoboticDesignatedHitter(tau,m,g,v0[i],theta_0[i],y0,A,C_d,rho,str,AirResistance=1,printon=0)
-    rangearray[i] = maxrange
+    rangearray[i] = maxrange*3.281 # in feet 
+    if maxrange*3.281 >= 400: 
+        count = count + 1
 
+ABHR_Ratio = N/count
+print(rangearray)
+print(count)
+print(ABHR_Ratio)
