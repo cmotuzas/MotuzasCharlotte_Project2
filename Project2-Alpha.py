@@ -45,7 +45,7 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
     if AirResistance == 1: 
         rho = rho_input
-    elif rho == None: 
+    elif rho_input == None: 
         rho = 0
     else: 
         rho = 0
@@ -56,13 +56,12 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
  
         accel = air_const*np.sqrt(v[0]**2 + v[1]**2)*v
         accel[1] = accel[1] - g
+        v_step = v + tau*accel  
+        r_old = r
 
         if str == "Euler": 
 
-            r_old = r
-
             #* Calculate the new position and velocity using Euler method
-            v_step = v + tau*accel  
             r_step = r + tau*v                   # Euler step
             v, r = v_step,r_step
 
@@ -71,11 +70,8 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
             # v(n+1) = vn + tau*an
             # r(n+1) = rn + tau*(v(n+1)+v(n))/
-
-            r_old = r
-
+            
             #* Calculate the new position and velocity using Euler method
-            v_step = v + tau*accel  
             r_step = r + tau*v_step              # Euler step
             v, r = v_step,r_step
             
@@ -87,9 +83,6 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
             
             #* Calculate the new position and velocity using Euler method
             
-            r_old = r
-            
-            v_step = v + tau*accel  
             r_step = r + tau*(v_step+v)/2
             v, r = v_step,r_step
 
@@ -152,7 +145,7 @@ for i in range (3):
     else: 
         plt.plot(xplot[0:laststep+1], yplot[0:laststep+1], '+')
 
-plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Midpoint Method']);
+plt.legend(['Theory (No air)','Ground','Euler Method','Euler-Cromer Method','Midpoint Method'], loc = 'best');
 plt.xlabel('Range (m)')
 plt.ylabel('Height (m)')
 plt.title('Projectile motion')
@@ -223,7 +216,7 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
 
     if AirResistance == 1: 
         rho = rho_input
-    elif rho == None: 
+    elif rho_input == None: 
         rho = 0
     else: 
         rho = 0
