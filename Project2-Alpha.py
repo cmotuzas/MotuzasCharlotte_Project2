@@ -27,7 +27,7 @@ d = 7.4 cm
 g = 9.81 m/s^2
 rho = 1.2 kg/m^3 
 C_d = 0.35
-A = np.pi*(d/2)**2
+A = np.pi*(d/2)**2 m^2
 y0 = 1.0 m'''
 
 # Part 1 
@@ -45,6 +45,8 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
     if AirResistance == 1: 
         rho = rho_input
+    elif rho == None: 
+        rho = 0
     else: 
         rho = 0
 
@@ -59,14 +61,10 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
             r_old = r
 
-
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
             r_step = r + tau*v                   # Euler step
             v, r = v_step,r_step
-
-        
-
 
         elif str == "Euler-Cromer": 
             # Euler-Cromer Method 
@@ -102,14 +100,14 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
             print("'Midpoint'")
             break
         
-        #* Record position (computed and theoretical) for plotting
+        # Record position (computed and theoretical) for plotting
         xplot[istep] = r[0]   # Record trajectory for plot
         yplot[istep] = r[1]
         t = istep*tau         # Current time
         xNoAir[istep] = r0[0] + v0[0]*t
         yNoAir[istep] = r0[1] + v0[1]*t - 0.5*g*t**2
         
-        #* If ball reaches ground (y<0), break out of the loop
+        # If ball reaches ground (y<0), break out of the loop
         if r[1] < 0 : 
             laststep = istep+1
             xplot[laststep] = r[0]  # Record last values computed
@@ -120,9 +118,8 @@ def RoboticDesignatedHitter(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResista
 
             break                   # Break out of the for loop
 
-
     if printon == 1: 
-        #* Print maximum range and time of flight
+        # Print maximum range and time of flight
         print('Maximum range is', maxrange, 'meters')
         print('Time of flight is', tmax, ' seconds')
 
@@ -184,19 +181,10 @@ plt.title('Projectile motion')
 plt.grid()
 plt.show()
 
-
-
-
 # Part 2 
 
-m = 0.145 
-d = 7.4/100 
-g = 9.81 
 rho = 1.2
-C_d = 0.35
-A = np.pi*(d/2)**2
 y0 = 1.0 
-tau = 0.1
 
 N = 100
 
@@ -235,6 +223,8 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
 
     if AirResistance == 1: 
         rho = rho_input
+    elif rho == None: 
+        rho = 0
     else: 
         rho = 0
 
@@ -248,7 +238,6 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
         if str == "Euler": 
 
             r_old = r
-
 
             #* Calculate the new position and velocity using Euler method
             v_step = v + tau*accel  
@@ -312,22 +301,14 @@ def RDHFence(tau,m,g,v0,theta_0,y0,A,C_d,rho_input,str,AirResistance=1,printon =
             height = -50 # still a height that would discount it from being a home run, but cuts off the loop 
             break 
     
-
     if printon == 1: 
         #* Print maximum range and time of flight
         print('height at 400 feet', height,'meters')
 
     return height
 
-
-m = 0.145 
-d = 7.4/100 
-g = 9.81 
 rho = 1.2
-C_d = 0.35
-A = np.pi*(d/2)**2
 y0 = 1.0 
-tau = 0.1
 
 N = 100
 mu_v0 = 100 
